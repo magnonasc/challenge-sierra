@@ -17,7 +17,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * The internal interface conforms the extensible and modifiable surface of crowdsales. Override
  * the methods to add functionality. Consider using 'super' where appropriate to concatenate
  * behavior.
- * 
+ *
  * This contract is based on the OpenZeppelin 2.0 Crowdsale smart contract.
  */
 contract HRBTokenCrowdsale is Context, ReentrancyGuard {

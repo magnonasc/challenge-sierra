@@ -10,7 +10,7 @@ contract HRBToken is ERC20 {
     constructor() ERC20("Hurb Token", "HRB") {
         minter = msg.sender;
     }
-    
+
     modifier onlyMinter() {
         require(msg.sender == minter, "HRBToken: Caller is not the minter");
         _;

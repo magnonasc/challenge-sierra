@@ -1,37 +1,32 @@
-const chai = require('chai');
+const { expect, use } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const expect = chai.expect;
-chai.use(chaiAsPromised);
+use(chaiAsPromised);
 
 const HRBToken = artifacts.require("HRBToken");
 
 contract('HRBToken', (accounts) => {
-  it('should revert when non minter tries to mint tokens', async () => {
-    const deployerAccount = accounts[0];
+    it('should revert when non minter tries to mint tokens', async () => {
+        const [ _, nonMinterAccount ] = accounts;
 
-    const hrbTokenInstance = await HRBToken.deployed({from: deployerAccount});
+        const hrbTokenInstance = await HRBToken.deployed();
 
-    const nonMinterAccount = accounts[1];
+        expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals('0');
 
-    expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals('0');
+        expect(hrbTokenInstance.mint(nonMinterAccount, '1', {from: nonMinterAccount})).to.eventually.be.rejected;
 
-    expect(hrbTokenInstance.mint(nonMinterAccount, 1, {from: nonMinterAccount})).to.eventually.be.rejected;
+        expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals('0');
+    });
 
-    expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals('0');
-  });
+    it('should mint tokens correctly', async () => {
+        const [ deployerAccount, recipientAccount ] = accounts;
 
-  it('should mint tokens correctly', async () => {
-    const deployerAccount = accounts[0];
+        const hrbTokenInstance = await HRBToken.deployed();
 
-    const hrbTokenInstance = await HRBToken.deployed({from: deployerAccount});
+        expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals('0');
 
-    const recipientAccount = accounts[1];
+        await hrbTokenInstance.mint(recipientAccount, '1', {from: deployerAccount});
 
-    expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals('0');
-
-    await hrbTokenInstance.mint(recipientAccount, 1, {from: deployerAccount});
-
-    expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals('1');
-  });
+        expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals('1');
+    });
 });

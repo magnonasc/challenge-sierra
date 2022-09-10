@@ -23,7 +23,7 @@ contract HurbBikeShareManager is Ownable {
         require(availableHurbBikes > 0, "HurbBikeShareManager: There is no available Hurb bikes to be rented.");
         _;
     }
-    
+
     modifier allowed() {
         require(address(hurbBikeRentals[msg.sender]) == address(0) || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.COMPLETED || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.LOSS_OF_RENT, "HurbBikeShareManager: There is an ongoing rent already associated with the caller's address.");
         _;
