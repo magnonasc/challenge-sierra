@@ -6,10 +6,14 @@ use(chaiAsPromised);
 const HRBToken = artifacts.require("HRBToken");
 
 contract('HRBToken', (accounts) => {
+    let hrbTokenInstance;
+
+    beforeEach(async () => {
+        hrbTokenInstance = await HRBToken.new();
+    });
+
     it('should revert when non minter tries to mint tokens', async () => {
         const [ _, nonMinterAccount ] = accounts;
-
-        const hrbTokenInstance = await HRBToken.deployed();
 
         expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals('0');
 
@@ -20,8 +24,6 @@ contract('HRBToken', (accounts) => {
 
     it('should mint tokens correctly', async () => {
         const [ deployerAccount, recipientAccount ] = accounts;
-
-        const hrbTokenInstance = await HRBToken.deployed();
 
         expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals('0');
 
