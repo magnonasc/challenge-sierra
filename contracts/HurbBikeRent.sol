@@ -21,7 +21,7 @@ contract HurbBikeRent is Ownable {
     }
 
     modifier inProgress() {
-        require(status == Status.IN_PROGRESS, "The rent is not in progress.");
+        require(status == Status.IN_PROGRESS, "HurbBikeRent: The rent is not in progress.");
         _;
     }
 
@@ -60,10 +60,10 @@ contract HurbBikeRent is Ownable {
     }
 
     function renounceOwnership() public view override onlyOwner {
-        revert("Cannot renounce ownership.");
+        revert("HurbBikeRent: Cannot renounce ownership.");
     }
 
     function transferOwnership(address) public view override onlyOwner {
-        revert("Cannot transfer ownership.");
+        revert("HurbBikeRent: Cannot transfer ownership.");
     }
 }

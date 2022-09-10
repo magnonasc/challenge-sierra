@@ -12,7 +12,7 @@ contract HRBToken is ERC20 {
     }
     
     modifier onlyMinter() {
-        msg.sender == minter;
+        require(msg.sender == minter, "HRBToken: Caller is not the minter");
         _;
     }
 

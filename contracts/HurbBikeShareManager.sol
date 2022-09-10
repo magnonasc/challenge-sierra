@@ -20,17 +20,17 @@ contract HurbBikeShareManager is Ownable {
     event LossOfRent(address indexed rent, address indexed renter, uint lossOfRentTime);
 
     modifier available() {
-        require(availableHurbBikes > 0, "There is no available Hurb bikes to be rented.");
+        require(availableHurbBikes > 0, "HurbBikeShareManager: There is no available Hurb bikes to be rented.");
         _;
     }
     
     modifier allowed() {
-        require(address(hurbBikeRentals[msg.sender]) == address(0) || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.COMPLETED || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.LOSS_OF_RENT, "There is an ongoing rent already associated with the caller's address.");
+        require(address(hurbBikeRentals[msg.sender]) == address(0) || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.COMPLETED || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.LOSS_OF_RENT, "HurbBikeShareManager: There is an ongoing rent already associated with the caller's address.");
         _;
     }
 
     modifier inProgress() {
-        require(address(hurbBikeRentals[msg.sender]) != address(0) && (hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.IN_PROGRESS || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.DEFAULTED), "There is no rent associated with the caller's address.");
+        require(address(hurbBikeRentals[msg.sender]) != address(0) && (hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.IN_PROGRESS || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.DEFAULTED), "HurbBikeShareManager: There is no rent associated with the caller's address.");
         _;
     }
 
@@ -97,10 +97,10 @@ contract HurbBikeShareManager is Ownable {
     }
 
     function renounceOwnership() public view override onlyOwner {
-        revert("Cannot renounce ownership.");
+        revert("HurbBikeShareManager: Cannot renounce ownership.");
     }
 
     function transferOwnership(address) public view override onlyOwner {
-        revert("Cannot transfer ownership.");
+        revert("HurbBikeShareManager: Cannot transfer ownership.");
     }
 }
