@@ -14,4 +14,7 @@ FROM node:16-bullseye-slim AS base
     # RUN npm install -g yarn
 
 FROM base AS development
+    ENV PORT 9545
+    EXPOSE ${PORT}
+
     RUN yarn global add truffle

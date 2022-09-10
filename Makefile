@@ -3,6 +3,7 @@
 INTERACTIVE:=$(shell [ -t 0 ] && echo i || echo d)
 APP_DIR=/usr/hu
 PWD=$(shell pwd)
+PORT?=9545
 APP_NAME?=$(shell pwd | xargs basename)
 DOCKER_IMAGE_NAME:=hu/${APP_NAME}
 DOCKER_STAGE?=development
@@ -34,6 +35,7 @@ endif
 		--name ${APP_NAME} \
 		--security-opt=seccomp:unconfined \
 		--env-file .env \
+		-p ${PORT}:${PORT} \
 		-v ${PWD}:${APP_DIR}:delegated \
 		-w ${APP_DIR} \
 		${DOCKER_RUN_ARGS} \
