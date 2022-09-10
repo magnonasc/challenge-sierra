@@ -8,12 +8,11 @@ import "./HurbBikeRent.sol";
 
 contract HurbBikeShareManager is Ownable {
     mapping(address => HurbBikeRent) private hurbBikeRentals;
+    mapping(HurbBikeRent => uint) private guaranteeTokens;
     uint private availableHurbBikes;
 
-    address private hurbWallet;
-    mapping(HurbBikeRent => uint) guaranteeTokens;
-
     IERC20 private hurbToken;
+    address private hurbWallet;
     uint private tokensPerHour;
 
     event BikeRentalStarted(address indexed rent, address indexed renter, uint startingTime, uint endingTime);
