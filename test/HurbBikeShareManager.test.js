@@ -24,7 +24,7 @@ contract('HurbBikeShareManager', (accounts) => {
 
         hurbBikeShareManagerInstance = await HurbBikeShareManager.new(hrbTokenInstance.address, walletAccount);
 
-        await hurbBikeShareManagerInstance.setTokensPerHour(toWei('48', 'ether'));
+        await hurbBikeShareManagerInstance.setTokensPerHour(toWei('42', 'ether'));
         await hurbBikeShareManagerInstance.setAvailableHurbBikes('100');
 
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: walletAccount});
@@ -48,14 +48,14 @@ contract('HurbBikeShareManager', (accounts) => {
     it('should set the token per hours correctly', async () => {
         const expected = {
             tokensPerHour: {
-                before: toWei('48', 'ether'),
-                after: toWei('24', 'ether')
+                before: toWei('42', 'ether'),
+                after: toWei('21', 'ether')
             }
         }
 
         expect((await hurbBikeShareManagerInstance.getTokensPerHour()).toString()).to.be.equals(expected.tokensPerHour.before);
 
-        await hurbBikeShareManagerInstance.setTokensPerHour(toWei('24', 'ether'));
+        await hurbBikeShareManagerInstance.setTokensPerHour(toWei('21', 'ether'));
 
         expect((await hurbBikeShareManagerInstance.getTokensPerHour()).toString()).to.be.equals(expected.tokensPerHour.after);
     });
@@ -80,16 +80,16 @@ contract('HurbBikeShareManager', (accounts) => {
 
         const expected = {
             renterAccount: {
-                before: toWei('144', 'ether'),
+                before: toWei('504', 'ether'),
                 after: '0'
             },
             walletAccount: {
                 before: '0',
-                after: toWei('144', 'ether')
+                after: toWei('504', 'ether')
             }
         }
 
-        await hrbTokenInstance.mint(renterAccount, toWei('144', 'ether'));
+        await hrbTokenInstance.mint(renterAccount, toWei('504', 'ether'));
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
 
         expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.before);
@@ -114,15 +114,15 @@ contract('HurbBikeShareManager', (accounts) => {
         const expected = {
             renterAccount: {
                 before: '0',
-                after:  toWei('108', 'ether')
+                after:  toWei('378', 'ether')
             },
             walletAccount: {
-                before: toWei('144', 'ether'),
-                after: toWei('36', 'ether')
+                before: toWei('504', 'ether'),
+                after: toWei('126', 'ether')
             }
         }
 
-        await hrbTokenInstance.mint(renterAccount, toWei('144', 'ether'));
+        await hrbTokenInstance.mint(renterAccount, toWei('504', 'ether'));
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
 
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
@@ -145,7 +145,7 @@ contract('HurbBikeShareManager', (accounts) => {
     it('should return the Hurb Bike rental correctly', async () => {
         const [ _, renterAccount ] = accounts;
 
-        await hrbTokenInstance.mint(renterAccount, toWei('144', 'ether'));
+        await hrbTokenInstance.mint(renterAccount, toWei('504', 'ether'));
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
 
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
@@ -163,7 +163,7 @@ contract('HurbBikeShareManager', (accounts) => {
             }
         }
 
-        await hrbTokenInstance.mint(renterAccount, toWei('144', 'ether'));
+        await hrbTokenInstance.mint(renterAccount, toWei('504', 'ether'));
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
 

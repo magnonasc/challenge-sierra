@@ -13,7 +13,7 @@ module.exports = async function (deployer, _, accounts) {
 
     const hurbBikeShareManagerInstance = await HurbBikeShareManager.deployed();
 
-    await hurbBikeShareManagerInstance.setTokensPerHour(toWei('48', 'ether'));
+    await hurbBikeShareManagerInstance.setTokensPerHour(toWei('42', 'ether'));
 
     await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: hurbWalletAccount});
 };

@@ -8,7 +8,6 @@ import "./HurbBikeRent.sol";
 
 contract HurbBikeShareManager is Ownable {
     mapping(address => HurbBikeRent) private hurbBikeRentals;
-    mapping(HurbBikeRent => uint) private guaranteeTokens;
     uint private availableHurbBikes;
 
     IERC20 private hurbToken;
@@ -63,14 +62,12 @@ contract HurbBikeShareManager is Ownable {
 
     function rentBike(uint _rentHours) external payable available allowed {
         uint endingTime = block.timestamp + (_rentHours * 1 hours);
-        hurbBikeRentals[msg.sender] = new HurbBikeRent(msg.sender, endingTime);
+        uint rentValue = tokensPerHour * _rentHours;
+
+        hurbBikeRentals[msg.sender] = new HurbBikeRent(msg.sender, endingTime, rentValue);
         availableHurbBikes--;
 
-        uint amountToTransfer = tokensPerHour * _rentHours;
-
-        hurbToken.transferFrom(msg.sender, hurbWallet, amountToTransfer);
-
-        guaranteeTokens[hurbBikeRentals[msg.sender]] = (amountToTransfer / 4) * 3;
+        hurbToken.transferFrom(msg.sender, hurbWallet, rentValue * 4);
 
         emit BikeRentalStarted(address(hurbBikeRentals[msg.sender]), msg.sender, block.timestamp, endingTime);
     }
@@ -80,11 +77,8 @@ contract HurbBikeShareManager is Ownable {
 
         uint agreementEndingTime = hurbBikeRentals[msg.sender].getAgreementEndingTime();
 
-        uint amountToTransfer = guaranteeTokens[hurbBikeRentals[msg.sender]];
-        guaranteeTokens[hurbBikeRentals[msg.sender]] = 0;
-
         if (agreementEndingTime >= block.timestamp) {
-            hurbToken.transferFrom(hurbWallet, msg.sender, amountToTransfer);
+            hurbToken.transferFrom(hurbWallet, msg.sender, hurbBikeRentals[msg.sender].getRentValue() * 3);
         }
 
         emit BikeRentalCompleted(address(hurbBikeRentals[msg.sender]), msg.sender, agreementEndingTime, block.timestamp);
@@ -92,8 +86,6 @@ contract HurbBikeShareManager is Ownable {
 
     function registerLossOfRent() external inProgress {
         hurbBikeRentals[msg.sender].registerLossOfRent();
-
-        guaranteeTokens[hurbBikeRentals[msg.sender]] = 0;
 
         emit LossOfRent(address(hurbBikeRentals[msg.sender]), msg.sender, block.timestamp);
     }
