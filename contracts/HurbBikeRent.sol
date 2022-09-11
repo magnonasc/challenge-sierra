@@ -42,12 +42,12 @@ contract HurbBikeRent is Ownable {
         return renter;
     }
 
-    function getStatus() public view returns(Status) {
+    function getStatus() public view returns(uint8) {
         if (status == Status.IN_PROGRESS && block.timestamp > agreementEndingTime) {
-            return Status.DEFAULTED;
+            return uint8(Status.DEFAULTED);
         }
 
-        return status;
+        return uint8(status);
     }
 
     function getStartingTime() public view returns(uint) {
