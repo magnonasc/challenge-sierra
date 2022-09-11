@@ -1,7 +1,9 @@
 const { expect, use } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const chaiBN = require('chai-bn')(web3.utils.BN);
 
 use(chaiAsPromised);
+use(chaiBN);
 
 const HRBToken = artifacts.require("HRBToken");
 
@@ -22,7 +24,7 @@ contract('HRBToken', (accounts) => {
             }
         }
 
-        expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals(expected.nonMinterAccount.before);
+        expect(await hrbTokenInstance.balanceOf(nonMinterAccount)).to.be.a.bignumber.equals(expected.nonMinterAccount.before);
 
         return expect(hrbTokenInstance.mint(nonMinterAccount, '1', {from: nonMinterAccount})).to.eventually.be.rejected;
     });
@@ -37,10 +39,10 @@ contract('HRBToken', (accounts) => {
             }
         }
 
-        expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals(expected.recipientAccount.before);
+        expect(await hrbTokenInstance.balanceOf(recipientAccount)).to.be.a.bignumber.equals(expected.recipientAccount.before);
 
         await hrbTokenInstance.mint(recipientAccount, '1', {from: deployerAccount});
 
-        expect((await hrbTokenInstance.balanceOf(recipientAccount)).toString()).to.be.equals(expected.recipientAccount.after);
+        expect(await hrbTokenInstance.balanceOf(recipientAccount)).to.be.a.bignumber.equals(expected.recipientAccount.after);
     });
 });

@@ -1,10 +1,12 @@
 const { expect, use } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const chaiBN = require('chai-bn')(web3.utils.BN);
 
 const { MAX_UINT256 } = require('../utils/constants');
 const { toWei, toBN } = web3.utils;
 
 use(chaiAsPromised);
+use(chaiBN);
 
 const HRBToken = artifacts.require("HRBToken");
 const HRBTokenCrowdsale = artifacts.require("HRBTokenCrowdsale");
@@ -37,7 +39,7 @@ contract('HRBTokenCrowdsale', (accounts) => {
         const expected = {
             fundsAccount: {
                 before: toWei(FIRST_MINT, 'ether'),
-                after: toBN(toWei(FIRST_MINT, 'ether')).sub(toBN(toWei('3', 'ether')).mul(tokenRate)).toString()
+                after: toBN(toWei(FIRST_MINT, 'ether')).sub(toBN(toWei('3', 'ether')).mul(tokenRate))
             },
             buyerAccount: {
                 before: '0',
@@ -45,13 +47,13 @@ contract('HRBTokenCrowdsale', (accounts) => {
             }
         }
 
-        expect((await hrbTokenInstance.balanceOf(fundsAccount)).toString()).to.be.equals(expected.fundsAccount.before);
-        expect((await hrbTokenInstance.balanceOf(buyerAccount)).toString()).to.be.equals(expected.buyerAccount.before);
+        expect(await hrbTokenInstance.balanceOf(fundsAccount)).to.be.a.bignumber.equals(expected.fundsAccount.before);
+        expect(await hrbTokenInstance.balanceOf(buyerAccount)).to.be.a.bignumber.equals(expected.buyerAccount.before);
 
         await hrbTokenCrowdsaleInstance.buyTokens(buyerAccount, {value: toWei('3', 'ether')});
 
-        expect((await hrbTokenInstance.balanceOf(fundsAccount)).toString()).to.be.equals(expected.fundsAccount.after);
-        expect((await hrbTokenInstance.balanceOf(buyerAccount)).toString()).to.be.equals(expected.buyerAccount.after);
+        expect(await hrbTokenInstance.balanceOf(fundsAccount)).to.be.a.bignumber.equals(expected.fundsAccount.after);
+        expect(await hrbTokenInstance.balanceOf(buyerAccount)).to.be.a.bignumber.equals(expected.buyerAccount.after);
     });
 
     it('should transfer tokens correctly for a different beneficiary', async () => {
@@ -63,7 +65,7 @@ contract('HRBTokenCrowdsale', (accounts) => {
         const expected = {
             fundsAccount: {
                 before: toWei(FIRST_MINT, 'ether'),
-                after: toBN(toWei(FIRST_MINT, 'ether')).sub(toBN(toWei('3', 'ether')).mul(tokenRate)).toString()
+                after: toBN(toWei(FIRST_MINT, 'ether')).sub(toBN(toWei('3', 'ether')).mul(tokenRate))
             },
             buyerAccount: {
                 before: '0',
@@ -75,14 +77,14 @@ contract('HRBTokenCrowdsale', (accounts) => {
             }
         }
 
-        expect((await hrbTokenInstance.balanceOf(fundsAccount)).toString()).to.be.equals(expected.fundsAccount.before);
-        expect((await hrbTokenInstance.balanceOf(buyerAccount)).toString()).to.be.equals(expected.buyerAccount.before);
-        expect((await hrbTokenInstance.balanceOf(beneficiaryAccount)).toString()).to.be.equals(expected.beneficiaryAccount.before);
+        expect(await hrbTokenInstance.balanceOf(fundsAccount)).to.be.a.bignumber.equals(expected.fundsAccount.before);
+        expect(await hrbTokenInstance.balanceOf(buyerAccount)).to.be.a.bignumber.equals(expected.buyerAccount.before);
+        expect(await hrbTokenInstance.balanceOf(beneficiaryAccount)).to.be.a.bignumber.equals(expected.beneficiaryAccount.before);
 
         await hrbTokenCrowdsaleInstance.buyTokens(beneficiaryAccount, {from: buyerAccount, value: toWei('3', 'ether')});
 
-        expect((await hrbTokenInstance.balanceOf(fundsAccount)).toString()).to.be.equals(expected.fundsAccount.after);
-        expect((await hrbTokenInstance.balanceOf(buyerAccount)).toString()).to.be.equals(expected.buyerAccount.after);
-        expect((await hrbTokenInstance.balanceOf(beneficiaryAccount)).toString()).to.be.equals(expected.beneficiaryAccount.after);
+        expect(await hrbTokenInstance.balanceOf(fundsAccount)).to.be.a.bignumber.equals(expected.fundsAccount.after);
+        expect(await hrbTokenInstance.balanceOf(buyerAccount)).to.be.a.bignumber.equals(expected.buyerAccount.after);
+        expect(await hrbTokenInstance.balanceOf(beneficiaryAccount)).to.be.a.bignumber.equals(expected.beneficiaryAccount.after);
     });
 });

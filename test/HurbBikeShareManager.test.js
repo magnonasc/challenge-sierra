@@ -1,7 +1,9 @@
 const { expect, use } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const chaiBN = require('chai-bn')(web3.utils.BN);
 
 use(chaiAsPromised);
+use(chaiBN);
 
 const { MAX_UINT256, ZERO_ADDRESS } = require('../utils/constants');
 const { toWei, toBN } = web3.utils;
@@ -38,11 +40,11 @@ contract('HurbBikeShareManager', (accounts) => {
             }
         }
 
-        expect((await hurbBikeShareManagerInstance.getAvailableHurbBikes()).toString()).to.be.equals(expected.availableHurbBikes.before);
+        expect(await hurbBikeShareManagerInstance.getAvailableHurbBikes()).to.be.a.bignumber.equals(expected.availableHurbBikes.before);
 
         await hurbBikeShareManagerInstance.setAvailableHurbBikes('50');
 
-        expect((await hurbBikeShareManagerInstance.getAvailableHurbBikes()).toString()).to.be.equals(expected.availableHurbBikes.after);
+        expect(await hurbBikeShareManagerInstance.getAvailableHurbBikes()).to.be.a.bignumber.equals(expected.availableHurbBikes.after);
     });
 
     it('should set the token per hours correctly', async () => {
@@ -53,11 +55,11 @@ contract('HurbBikeShareManager', (accounts) => {
             }
         }
 
-        expect((await hurbBikeShareManagerInstance.getTokensPerHour()).toString()).to.be.equals(expected.tokensPerHour.before);
+        expect(await hurbBikeShareManagerInstance.getTokensPerHour()).to.be.a.bignumber.equals(expected.tokensPerHour.before);
 
         await hurbBikeShareManagerInstance.setTokensPerHour(toWei('21', 'ether'));
 
-        expect((await hurbBikeShareManagerInstance.getTokensPerHour()).toString()).to.be.equals(expected.tokensPerHour.after);
+        expect(await hurbBikeShareManagerInstance.getTokensPerHour()).to.be.a.bignumber.equals(expected.tokensPerHour.after);
     });
 
     it('should not rent the Hurb Bikes if there is allowance for the HRB tokens', async () => {
@@ -69,7 +71,7 @@ contract('HurbBikeShareManager', (accounts) => {
 
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals('0');
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals('0');
 
         return expect(hurbBikeShareManagerInstance.rentBike('3')).to.eventually.be.rejected;
     });
@@ -92,13 +94,13 @@ contract('HurbBikeShareManager', (accounts) => {
         await hrbTokenInstance.mint(renterAccount, toWei('504', 'ether'));
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.before);
-        expect((await hrbTokenInstance.balanceOf(walletAccount)).toString()).to.be.equals(expected.walletAccount.before);
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals(expected.renterAccount.before);
+        expect(await hrbTokenInstance.balanceOf(walletAccount)).to.be.a.bignumber.equals(expected.walletAccount.before);
 
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.after);
-        expect((await hrbTokenInstance.balanceOf(walletAccount)).toString()).to.be.equals(expected.walletAccount.after);
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals(expected.renterAccount.after);
+        expect(await hrbTokenInstance.balanceOf(walletAccount)).to.be.a.bignumber.equals(expected.walletAccount.after);
     });
 
     it('should not return the Hurb Bike if there is no rent currently in progress', async () => {
@@ -127,19 +129,19 @@ contract('HurbBikeShareManager', (accounts) => {
 
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.before);
-        expect((await hrbTokenInstance.balanceOf(walletAccount)).toString()).to.be.equals(expected.walletAccount.before);
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals(expected.renterAccount.before);
+        expect(await hrbTokenInstance.balanceOf(walletAccount)).to.be.a.bignumber.equals(expected.walletAccount.before);
 
         await hurbBikeShareManagerInstance.returnBike({from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.after);
-        expect((await hrbTokenInstance.balanceOf(walletAccount)).toString()).to.be.equals(expected.walletAccount.after);
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals(expected.renterAccount.after);
+        expect(await hrbTokenInstance.balanceOf(walletAccount)).to.be.a.bignumber.equals(expected.walletAccount.after);
     });
 
     it('should return the zero address if there is no rent currently in progress', async () => {
         const [ _, renterAccount ] = accounts;
 
-        expect((await hurbBikeShareManagerInstance.getHurbBikeRental({from: renterAccount}))).to.be.equals(ZERO_ADDRESS);
+        expect(await hurbBikeShareManagerInstance.getHurbBikeRental({from: renterAccount})).to.be.equals(ZERO_ADDRESS);
     });
 
     it('should return the Hurb Bike rental correctly', async () => {
@@ -150,7 +152,7 @@ contract('HurbBikeShareManager', (accounts) => {
 
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
 
-        expect((await hurbBikeShareManagerInstance.getHurbBikeRental({from: renterAccount}))).to.be.not.equals(ZERO_ADDRESS);
+        expect(await hurbBikeShareManagerInstance.getHurbBikeRental({from: renterAccount})).to.be.not.equals(ZERO_ADDRESS);
     });
 
     it('should register lost of rent correctly', async () => {
@@ -167,11 +169,11 @@ contract('HurbBikeShareManager', (accounts) => {
         await hrbTokenInstance.approve(hurbBikeShareManagerInstance.address, MAX_UINT256, {from: renterAccount});
         await hurbBikeShareManagerInstance.rentBike('3', {from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.before);
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals(expected.renterAccount.before);
 
         await hurbBikeShareManagerInstance.registerLossOfRent({from: renterAccount});
 
-        expect((await hrbTokenInstance.balanceOf(renterAccount)).toString()).to.be.equals(expected.renterAccount.after);
+        expect(await hrbTokenInstance.balanceOf(renterAccount)).to.be.a.bignumber.equals(expected.renterAccount.after);
     });
 
     it('should not renounce ownership', async () => {
