@@ -11,8 +11,6 @@ FROM node:16-bullseye-slim AS base
         && ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime \
         && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-    # RUN npm install -g yarn
-
 FROM base AS development
     ENV PORT 9545
     EXPOSE ${PORT}

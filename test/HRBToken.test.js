@@ -24,9 +24,7 @@ contract('HRBToken', (accounts) => {
 
         expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals(expected.nonMinterAccount.before);
 
-        expect(hrbTokenInstance.mint(nonMinterAccount, '1', {from: nonMinterAccount})).to.eventually.be.rejected;
-
-        expect((await hrbTokenInstance.balanceOf(nonMinterAccount)).toString()).to.be.equals(expected.nonMinterAccount.after);
+        return expect(hrbTokenInstance.mint(nonMinterAccount, '1', {from: nonMinterAccount})).to.eventually.be.rejected;
     });
 
     it('should mint tokens correctly', async () => {

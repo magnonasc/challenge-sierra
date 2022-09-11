@@ -1,15 +1,16 @@
 const { expect, use } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
+const { MAX_UINT256 } = require('../utils/constants');
+const { toWei, toBN } = web3.utils;
+
 use(chaiAsPromised);
 
-const { toWei, toBN } = web3.utils;
 const HRBToken = artifacts.require("HRBToken");
 const HRBTokenCrowdsale = artifacts.require("HRBTokenCrowdsale");
 
 const FIRST_MINT = '100000000000';
 const HRB_ETH_RATE = '6626070';
-const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 contract('HRBTokenCrowdsale', (accounts) => {
     let hrbTokenInstance;

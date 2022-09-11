@@ -1,9 +1,8 @@
 const HurbBikeShareManager = artifacts.require("HurbBikeShareManager");
 const HRBToken = artifacts.require("HRBToken");
 
+const { MAX_UINT256 } = require('../utils/constants');
 const { toWei } = web3.utils;
-
-const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 module.exports = async function (deployer, _, accounts) {
     const hurbWalletAccount = accounts[accounts.length - 2];

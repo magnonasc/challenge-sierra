@@ -1,4 +1,5 @@
 .DEFAULT_GOAL:=help
+.PHONY: help test
 
 INTERACTIVE:=$(shell [ -t 0 ] && echo i || echo d)
 APP_DIR=/usr/hu
@@ -45,7 +46,7 @@ endif
 run-dev: setup ## Run project for development purposes
 	@make docker-run DOCKER_COMMAND="truffle develop"
 
-console:
+console: ## Attach a console to the running instance of Truffle
 	@docker exec -it ${APP_NAME} truffle console
 
 help: welcome
