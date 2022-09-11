@@ -1,7 +1,9 @@
 const { expect, use } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const chaiBN = require('chai-bn')(web3.utils.BN);
 
 use(chaiAsPromised);
+use(chaiBN);
 
 const { toWei, toBN } = web3.utils;
 
@@ -16,7 +18,7 @@ const STATUS_ENUM = {
 
 const createDate = () => {
     const currentUnixTime = String(new Date().setMilliseconds(0));
-    return Number(currentUnixTime.substring(0, currentUnixTime.length - 3));
+    return toBN(currentUnixTime.substring(0, currentUnixTime.length - 3));
 };
 
 contract('HurbBikeRent', (accounts) => {
@@ -27,17 +29,17 @@ contract('HurbBikeRent', (accounts) => {
             status: STATUS_ENUM.IN_PROGRESS,
             startingTime: createDate(),
             endingTime: '0',
-            agreementEndingTime: String(createDate() + (60 * 60)),
+            agreementEndingTime: createDate().add(toBN('3600')),
             rentValue: toWei('42', 'ether')
         }
 
         const hurbBikeRentInstance = await HurbBikeRent.new(renterAccount, expected.agreementEndingTime, toWei('42', 'ether'));
 
-        expect((await hurbBikeRentInstance.getStatus()).toString()).to.be.equals(expected.status);
-        expect((await hurbBikeRentInstance.getStartingTime()).toNumber()).to.be.closeTo(expected.startingTime, 1);
-        expect((await hurbBikeRentInstance.getAgreementEndingTime()).toString()).to.be.equals(expected.agreementEndingTime);
-        expect((await hurbBikeRentInstance.getRentValue()).toString()).to.be.equals(expected.rentValue);
-        expect((await hurbBikeRentInstance.getEndingTime()).toString()).to.be.equals(expected.endingTime);
+        expect(await hurbBikeRentInstance.getStatus()).to.be.a.bignumber.equals(expected.status);
+        expect(await hurbBikeRentInstance.getStartingTime()).to.be.a.bignumber.closeTo(expected.startingTime, '1');
+        expect(await hurbBikeRentInstance.getAgreementEndingTime()).to.be.a.bignumber.equals(expected.agreementEndingTime);
+        expect(await hurbBikeRentInstance.getRentValue()).to.be.a.bignumber.equals(expected.rentValue);
+        expect(await hurbBikeRentInstance.getEndingTime()).to.be.a.bignumber.equals(expected.endingTime);
     });
 
     it('should return the Bike Rent correctly', async () => {
@@ -51,14 +53,14 @@ contract('HurbBikeRent', (accounts) => {
             }
         }
 
-        const hurbBikeRentInstance = await HurbBikeRent.new(renterAccount, String(createDate() + (60 * 60)), toWei('42', 'ether'));
+        const hurbBikeRentInstance = await HurbBikeRent.new(renterAccount, createDate().add(toBN('3600')), toWei('42', 'ether'));
 
-        expect((await hurbBikeRentInstance.getEndingTime()).toString()).to.be.equals(expected.endingTime.before);
+        expect(await hurbBikeRentInstance.getEndingTime()).to.be.a.bignumber.equals(expected.endingTime.before);
 
         await hurbBikeRentInstance.returnBikeRent();
 
-        expect((await hurbBikeRentInstance.getStatus()).toString()).to.be.equals(expected.status);
-        expect((await hurbBikeRentInstance.getEndingTime()).toNumber()).to.be.closeTo(expected.endingTime.after, 1);
+        expect(await hurbBikeRentInstance.getStatus()).to.be.a.bignumber.equals(expected.status);
+        expect(await hurbBikeRentInstance.getEndingTime()).to.be.a.bignumber.closeTo(expected.endingTime.after, '1');
     });
 
     it('should register loss of rent for the Bike Rent correctly', async () => {
@@ -72,13 +74,13 @@ contract('HurbBikeRent', (accounts) => {
             }
         }
 
-        const hurbBikeRentInstance = await HurbBikeRent.new(renterAccount, String(createDate() + (60 * 60)), toWei('42', 'ether'));
+        const hurbBikeRentInstance = await HurbBikeRent.new(renterAccount, createDate().add(toBN('3600')), toWei('42', 'ether'));
 
-        expect((await hurbBikeRentInstance.getEndingTime()).toString()).to.be.equals(expected.endingTime.before);
+        expect(await hurbBikeRentInstance.getEndingTime()).to.be.a.bignumber.equals(expected.endingTime.before);
 
         await hurbBikeRentInstance.registerLossOfRent();
 
-        expect((await hurbBikeRentInstance.getStatus()).toString()).to.be.equals(expected.status);
-        expect((await hurbBikeRentInstance.getEndingTime()).toNumber()).to.be.closeTo(expected.endingTime.after, 1);
+        expect(await hurbBikeRentInstance.getStatus()).to.be.a.bignumber.equals(expected.status);
+        expect(await hurbBikeRentInstance.getEndingTime()).to.be.a.bignumber.closeTo(expected.endingTime.after, '1');
     });
 });
