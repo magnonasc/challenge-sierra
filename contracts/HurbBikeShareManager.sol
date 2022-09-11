@@ -25,11 +25,13 @@ contract HurbBikeShareManager is Ownable {
     }
 
     modifier allowed() {
+        // The call for getStatus() is repeated in the condition below to make use of the short-circuiting.
         require(address(hurbBikeRentals[msg.sender]) == address(0) || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.COMPLETED || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.LOSS_OF_RENT, "HurbBikeShareManager: There is an ongoing rent already associated with the caller's address.");
         _;
     }
 
     modifier inProgress() {
+        // The call for getStatus() is repeated in the condition below to make use of the short-circuiting.
         require(address(hurbBikeRentals[msg.sender]) != address(0) && (hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.IN_PROGRESS || hurbBikeRentals[msg.sender].getStatus() == HurbBikeRent.Status.DEFAULTED), "HurbBikeShareManager: There is no rent associated with the caller's address.");
         _;
     }
