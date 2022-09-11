@@ -1,5 +1,2 @@
 # Node files
 node_modules/
-
-# Truffle files
-build/
