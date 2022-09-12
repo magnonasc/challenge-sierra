@@ -32,9 +32,12 @@ export const HRBTokenContextProvider = ({ children }) => {
         if (hrbTokenContractInstance && ethContext.selectedAccount) {
             const approvalFilter = hrbTokenContractInstance.filters.Approval(ethContext.selectedAccount, HurbBikeShareManagerContractAddress);
             const lastApprovalEvent = (await hrbTokenContractInstance.queryFilter(approvalFilter)).pop();
+            const approved = lastApprovalEvent && !(lastApprovalEvent.args['value'].eq(BigNumber.from('0')));
 
-            if (lastApprovalEvent && lastApprovalEvent.args['value'] != BigNumber.from('0')) {
+            if (approved) {
                 setIsHurbBikeShareManagerContractApproved(true);
+            } else {
+                setIsHurbBikeShareManagerContractApproved(false);
             }
         }
     };
