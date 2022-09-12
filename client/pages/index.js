@@ -19,8 +19,8 @@ const Home = () => {
         await hrbTokenCrowdsaleContext.buyHRBTokens('662');
     };
 
-    const handleApproveCrowdsale = async () => {
-        await hrbTokenContext.approveCrowdsaleContract();
+    const handleApproveHurbBikeShareManagerContract = async () => {
+        await hrbTokenContext.approveHurbBikeShareManagerContract();
     };
 
     useEffect(() => {
@@ -41,6 +41,10 @@ const Home = () => {
         (async () => await hrbTokenCrowdsaleContext.loadHRBTokenETHRate())();
     }, [ethContext.selectedAccount]);
 
+    useEffect(() => {
+        (async () => await hrbTokenContext.checkHurbBikeShareManagerContractApproval())();
+    }, [ethContext.selectedAccount]);
+
     return (
         <div className={styles.container}>
             <Head>
@@ -53,9 +57,9 @@ const Home = () => {
             </Head>
 
             <main className={styles.main}>
-                <p>Você tem {hrbTokenContext.hrbTokenBalance} HRB Tokens!</p>
-                <p>A taxa atual do HRB Token é de 1 ETH para {hrbTokenCrowdsaleContext.hrbTokenETHRate} HRBs</p>
-                <button onClick={handleApproveCrowdsale}>Aprovar contrato de Crowdsale</button>
+                <p>Você tem {hrbTokenContext.hrbTokenBalance ? ethers.utils.formatEther(hrbTokenContext.hrbTokenBalance) : 0} HRB Tokens!</p>
+                <p>A taxa atual do HRB Token é de 1 ETH para {hrbTokenCrowdsaleContext.hrbTokenETHRate || 0} HRBs</p>
+                {!hrbTokenContext.isHurbBikeShareManagerContractApproved && (<button onClick={handleApproveHurbBikeShareManagerContract}>Aprovar contrato para alugar uma Hurb Bike</button>)}
                 <button onClick={handleBuyHRBTokens}>Comprar 662 HRB Tokens</button>
             </main>
 

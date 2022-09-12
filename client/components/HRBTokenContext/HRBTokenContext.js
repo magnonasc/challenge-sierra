@@ -6,7 +6,7 @@ import HRBToken from "./HRBToken.json";
 import { useEthContext } from "../EthContext/EthContext";
 
 const HRBTokenContractAddress = process.env.NEXT_PUBLIC_HRB_TOKEN_CONTRACT_ADDRESS;
-const HRBTokenCrowdsaleContractAddress = process.env.NEXT_PUBLIC_HRB_TOKEN_CROWDSALE_CONTRACT_ADDRESS;
+const HurbBikeShareManagerContractAddress = process.env.NEXT_PUBLIC_HURB_BIKE_SHARE_MANAGER_CONTRACT_ADDRESS;
 
 export const HRBTokenContext = createContext();
 
@@ -14,6 +14,7 @@ export const HRBTokenContextProvider = ({ children }) => {
     const ethContext = useEthContext();
     const [hrbTokenContractInstance, setHRBTokenContractInstance] = useState();
     const [hrbTokenBalance, setHRBTokenBalance] = useState();
+    const [isHurbBikeShareManagerContractApproved, setIsHurbBikeShareManagerContractApproved] = useState();
 
     const loadHRBTokenContractInstance = async () => {
         setHRBTokenContractInstance(new ethers.Contract(HRBTokenContractAddress, HRBToken.abi, ethContext.getEthProvider().getSigner(ethContext.selectedAccount)));
@@ -27,8 +28,21 @@ export const HRBTokenContextProvider = ({ children }) => {
         }
     };
 
-    const approveCrowdsaleContract = async () => {
-        await hrbTokenContractInstance.approve(HRBTokenCrowdsaleContractAddress, MAX_UINT256);
+    const checkHurbBikeShareManagerContractApproval = async () => {
+        if (hrbTokenContractInstance && ethContext.selectedAccount) {
+            const approvalFilter = hrbTokenContractInstance.filters.Approval(ethContext.selectedAccount, HurbBikeShareManagerContractAddress);
+            const lastApprovalEvent = (await hrbTokenContractInstance.queryFilter(approvalFilter)).pop();
+
+            if (lastApprovalEvent && lastApprovalEvent.args['value'] != BigNumber.from('0')) {
+                setIsHurbBikeShareManagerContractApproved(true);
+            }
+        }
+    };
+
+    const approveHurbBikeShareManagerContract = async () => {
+        await hrbTokenContractInstance.approve(HurbBikeShareManagerContractAddress, MAX_UINT256);
+        const filter = hrbTokenContractInstance.filters.Approval(ethContext.selectedAccount, HurbBikeShareManagerContractAddress);
+        ethContext.getEthProvider().on(filter, checkHurbBikeShareManagerContractApproval);
     };
 
     const listenTransfers = () => {
@@ -40,7 +54,9 @@ export const HRBTokenContextProvider = ({ children }) => {
         loadHRBTokenContractInstance,
         loadHRBTokenBalance,
         hrbTokenBalance,
-        approveCrowdsaleContract
+        checkHurbBikeShareManagerContractApproval,
+        isHurbBikeShareManagerContractApproved,
+        approveHurbBikeShareManagerContract
     };
 
     return <HRBTokenContext.Provider value={value}>{children}</HRBTokenContext.Provider>;
